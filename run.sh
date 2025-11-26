@@ -1,4 +1,4 @@
-#@/bin/bash
+#@/bin/bash -ex
 
 # Build frontend
 cd frontend
