@@ -13,12 +13,6 @@ def health():
     return jsonify({'message': 'OK'})
 
 
-def _plot_ridge(plt, training_data, ridge_data):
-    plt.plot(training_data[0], training_data[1], 'b.')
-    plt.plot(ridge_data[0], ridge_data[1], '-r')
-
-
-
 @api_blueprint.route('/ridge')
 def ridge_regression():
     dataset = make_fake_data()
@@ -30,5 +24,3 @@ def ridge_regression():
     plot_ridge = lambda plt: plt.plot(dataset[0], dataset[1], 'b.', ridge_x, ridge_y, '-r')
     image_src = build_img_src_from_plot(plot_ridge)
     return jsonify({'message': 'OK', 'img_src': image_src})
-
-
