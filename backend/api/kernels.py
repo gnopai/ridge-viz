@@ -26,7 +26,7 @@ class PowerNKernel:
         self.power = power
 
     def compute(self, x, y):
-        return (np.dot(x, y.T) + 1) ** power
+        return (np.dot(x, y.T) + 1) ** self.power
 
 
 def createKernel(name, **kwargs):

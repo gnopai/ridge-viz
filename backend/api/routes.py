@@ -26,7 +26,7 @@ def ridge_regression():
 
     body = request.get_json()
     kernel = _getKernelForRequest(body)
-    lamb = 0.1
+    lamb = body.get('lambda')
 
     ridge_x = np.linspace(0, n, 1000)
     ridge_y = ridge.ridge_regression(kernel, lamb, dataset, ridge_x)
