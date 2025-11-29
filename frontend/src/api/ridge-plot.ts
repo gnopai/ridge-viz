@@ -1,13 +1,13 @@
-import type { RidgePlot } from '../types';
+import type { RidgePlotResponse, RidgePlotRequest } from '../types';
 import { handleResponse, staticHeaders } from './util';
 
-export const requestRidgePlot = async (): Promise<RidgePlot> => {
-  // TODO const body = JSON.stringify(something);
+export const requestRidgePlot = async (request: RidgePlotRequest): Promise<RidgePlotResponse> => {
+  const body = JSON.stringify(request);
   const res = await fetch('/api/ridge', {
-    method: 'GET', // TODO switch to POST
-    // body, TODO
+    method: 'POST',
+    body,
     headers: staticHeaders,
     cache: 'no-store',
   });
-  return handleResponse<RidgePlot>(res);
+  return handleResponse<RidgePlotResponse>(res);
 };
