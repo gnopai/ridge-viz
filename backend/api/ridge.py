@@ -1,5 +1,4 @@
 import numpy as np
-from api.util import fix_data_dimension
 
 
 def _calculate_alphas(kernel, lamb, data):
@@ -16,5 +15,5 @@ def _eval_single_point(kernel, x, data_xs, alphas):
 
 def ridge_regression(kernel, lamb, data, xs):
     alphas = _calculate_alphas(kernel, lamb, data)
-    data_xs = fix_data_dimension(data[0])
+    data_xs = data[0]
     return np.array([_eval_single_point(kernel, x, data_xs, alphas) for x in xs])
