@@ -17,3 +17,11 @@ def ridge_regression(kernel, lamb, data, xs):
     alphas = _calculate_alphas(kernel, lamb, data)
     data_xs = data[0]
     return np.array([_eval_single_point(kernel, x, data_xs, alphas) for x in xs])
+
+
+def plot_ridge_regression(dataset, ridge_x, ridge_y):
+    def make_plot(plt):
+        plt.plot(dataset.x, dataset.y_samples[0], 'b.', ridge_x, ridge_y, '-r')
+
+    return make_plot
+
