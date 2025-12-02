@@ -1,25 +1,31 @@
 import numpy as np
 
 
-def _calculate_alphas(kernel, lamb, data):
-    K = kernel.compute(data[0], data[0])
-    n = len(data[0])
-    inverse = np.linalg.inv(K + n * lamb * np.identity(n))
-    return np.linalg.matmul(inverse, data[1])
+class RidgeModel:
+    def __init__(self, kernel, lamb, train_x, train_y):
+        self.kernel = kernel
+        self.lamb = lamb
+        self.train_x = train_x
+
+        # do the fitting here
+        K = self.kernel.compute(train_x, train_x)
+        n = len(train_x)
+        # TODO there's more efficient ways to do this
+        inverse = np.linalg.inv(K + n * self.lamb * np.identity(n))
+        self.alphas = np.linalg.matmul(inverse, train_y)
 
 
-def _eval_single_point(kernel, x, data_xs, alphas):
-    x_as_array = np.array([x])[:, None]
-    return np.dot(kernel.compute(x_as_array, data_xs), alphas)
+    def predict(self, xs):
+        return np.array([self._predict_single(x) for x in xs])
 
 
-def ridge_regression(kernel, lamb, data, xs):
-    alphas = _calculate_alphas(kernel, lamb, data)
-    data_xs = data[0]
-    return np.array([_eval_single_point(kernel, x, data_xs, alphas) for x in xs])
+    def _predict_single(self, x):
+        x_as_array = np.array([x])[:, None]
+        return np.dot(self.kernel.compute(x_as_array, self.train_x), self.alphas)
 
 
-def plot_ridge_regression(dataset, ridge_x, ridge_y):
+
+def ridge_plotter(dataset, ridge_x, ridge_y):
     def make_plot(plt):
         plt.plot(dataset.x, dataset.y_samples[0], 'b.', ridge_x, ridge_y, '-r')
 

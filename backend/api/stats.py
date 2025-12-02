@@ -1,6 +1,11 @@
 import numpy as np
 
 
+def overall_mse(data_process, x, y):
+    actual_y = data_process.means(x)
+    return np.mean(np.pow(actual_y - y, 2))
+
+
 def mse_plotter(data_process, ridge_x, ridge_y):
     means = np.array([np.mean(y) for y in ridge_y.T])
     variances = np.array([np.var(y, ddof=1) for y in ridge_y.T])

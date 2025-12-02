@@ -50,8 +50,8 @@ function App() {
       <h1 className="text-3xl font-bold">Ridge Viz</h1>
       <div className="flex flex-col border-1 border-gray-300 mx-20 my-10 p-4">
         <div className="flex flex-row">
-            <Plot title="Ridge Regression" imgSrc={ridgeResponse?.ridge_plot} />
-            <Plot title="MSE Breakdown" imgSrc={ridgeResponse?.mse_plot} />
+            <Plot title="Ridge Regression" imgSrc={ridgeResponse?.results[0]?.ridgePlot} />
+            <Plot title="MSE Breakdown" imgSrc={ridgeResponse?.results[0]?.msePlot} />
         </div>
         <div className="flex flex-row justify-center">
           <KernelSelector kernelConfigs={kernelConfigs} onSelectKernel={switchKernel} />
