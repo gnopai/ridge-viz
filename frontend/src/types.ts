@@ -1,7 +1,17 @@
 export interface RidgeResponse {
+  results: RidgeResult[];
   message: string;
-  ridge_plot: string;
-  mse_plot: string;
+}
+
+export interface RidgeResult {
+  lambdas: number;
+  runs: number;
+  kernelName: string;
+  kernelParamName: string | null;
+  kernelParamValue: number | null;
+  overallMSE: number;
+  ridgePlot: string;
+  msePlot: string;
 }
 
 export interface RidgeRequest {

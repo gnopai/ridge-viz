@@ -4,8 +4,8 @@ import numpy as np
 from api.kernels import createKernel, getKernelConfigs
 from api.data import default_gaussian_process
 from api.util import build_img_src_from_plot
-from api.stats import mse_plotter
-from api.ridge import ridge_regression as do_ridge_reg, plot_ridge_regression
+from api.stats import mse_plotter, overall_mse
+from api.ridge import ridge_plotter, RidgeModel
 from api.request import get_run_configs
 
 api_blueprint = Blueprint("api", __name__)
@@ -26,21 +26,31 @@ def kernelConfigs():
 def ridge_regression():
     body = request.get_json()
     run_configs = get_run_configs(body)
-    first_config = run_configs[0]
 
     data_process = default_gaussian_process
-    dataset = data_process.sample(np.arange(255), first_config.runs)
+    dataset = data_process.sample(np.arange(255), run_configs[0].runs)
     n = dataset.length()
 
     ridge_x = np.linspace(0, n, 1000)
-    all_ridge_y = np.array([do_ridge_reg(first_config.kernel, first_config.lamb, (dataset.x, y), ridge_x) for y in dataset.y_samples])
-    all_ridge_y = all_ridge_y.reshape(first_config.runs, len(ridge_x))
+    ridge_results = [_run_single_config(config, dataset, data_process, ridge_x) for config in run_configs]
 
-    ridge_plot_img = build_img_src_from_plot(plot_ridge_regression(dataset, ridge_x, all_ridge_y[0]))
+    return jsonify({'message': 'OK', 'results': ridge_results})
+
+
+def _run_single_config(config, dataset, data_process, ridge_x):
+    ridge_models = [RidgeModel(config.kernel, config.lamb, dataset.x, y) for y in dataset.y_samples]
+    all_ridge_y = np.array([model.predict(ridge_x) for model in ridge_models])
+    all_ridge_y = all_ridge_y.reshape(config.runs, len(ridge_x))
+
+    ridge_plot_img = build_img_src_from_plot(ridge_plotter(dataset, ridge_x, all_ridge_y[0]))
     mse_plot_img = build_img_src_from_plot(mse_plotter(data_process, ridge_x, all_ridge_y))
 
-    return jsonify({'message': 'OK', 'ridge_plot': ridge_plot_img, 'mse_plot': mse_plot_img})
-
+    response = config.as_dict()
+    response['ridgePlot'] = ridge_plot_img
+    response['msePlot'] = mse_plot_img
+    response['overallMSE'] = overall_mse(data_process, ridge_x, all_ridge_y[0])
+    return response
+    
 
 @api_blueprint.errorhandler(HTTPException)
 def handle_exception(e):
