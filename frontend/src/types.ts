@@ -5,17 +5,15 @@ export interface RidgeResponse {
 }
 
 export interface RidgeRequest {
-  kernel: string;
-  kernelParamName: string | null;
-  kernelParamValue: number | null;
-  lambda: number;
+  kernels: KernelConfig[];
+  lambdas: number[];
   runs: number;
 }
 
 export interface KernelConfig {
   name: string;
-  param: string | null;
-  paramDefault: number | null;
+  paramName: string | null;
+  paramValue: number | null;
 }
 
 export interface KernelConfigResponse {
