@@ -74,7 +74,7 @@ def _extractConfigForKernelClass(obj):
             paramName = name
             paramDefault = param.default
 
-    return { 'name': className, 'param': paramName, 'paramDefault': paramDefault }
+    return { 'name': className, 'paramName': paramName, 'paramValue': paramDefault }
 
 
 def getKernelConfigs():

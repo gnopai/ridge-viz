@@ -17,7 +17,7 @@ function App() {
 
   const switchKernel = (kernel: KernelConfig | null) => {
     setKernel(kernel);
-    setKernelParam(kernel?.paramDefault || null);
+    setKernelParam(kernel?.paramValue || null);
   };
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function App() {
     getKernelConfigs().then((response) => {
       setKernelConfigs(response.kernelConfigs);
       setKernel(response.kernelConfigs[0]);
-      setKernelParam(response.kernelConfigs[0].paramDefault);
+      setKernelParam(response.kernelConfigs[0].paramValue);
     });
   }, []);
 
@@ -34,10 +34,11 @@ function App() {
     if (!kernel) return;
 
     requestRidgePlots({
-      kernel: kernel.name,
-      kernelParamName: kernel.param,
-      kernelParamValue: kernelParam,
-      lambda,
+      kernels: [{
+        ...kernel,
+        paramValue: kernelParam,
+      }],
+      lambdas: [lambda],
       runs,
     }).then((response) => {
       setRidgeResponse(response);
