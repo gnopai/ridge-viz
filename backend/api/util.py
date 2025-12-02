@@ -1,14 +1,6 @@
-import numpy as np
 import base64
 from io import BytesIO
 from matplotlib.figure import Figure
-
-
-def fix_data_dimension(data):
-    if len(data.shape) > 1:
-        return data
-
-    return data[:, None]
 
 
 def build_img_src_from_plot(plot_function):

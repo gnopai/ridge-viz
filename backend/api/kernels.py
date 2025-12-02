@@ -16,17 +16,40 @@ class GaussianKernel:
         return np.exp((-(x - y.T)**2) / (2 * self.variance))
 
 
+class SincKernel:
+    def __init__(self, a = 1/np.pi):
+        self.a = a
+
+    def compute(self, x, y):
+        return np.sinc(self.a * (x - y.T)**2)
+
+
 class LinearKernel:
     def compute(self, x, y):
         return np.dot(x, y.T)
 
 
-class PowerNKernel:
-    def __init__(self, power = 1):
+class PowerKernelBase:
+    def __init__(self, power):
         self.power = power
 
     def compute(self, x, y):
         return (np.dot(x, y.T) + 1) ** self.power
+
+
+class AffineKernel(PowerKernelBase):
+    def __init__(self):
+        super().__init__(1)
+
+
+class QuadKernel(PowerKernelBase):
+    def __init__(self):
+        super().__init__(2)
+
+
+class CubicKernel(PowerKernelBase):
+    def __init__(self):
+        super().__init__(3)
 
 
 def createKernel(name, **kwargs):

@@ -1,13 +1,15 @@
-export interface RidgePlotResponse {
+export interface RidgeResponse {
   message: string;
-  img_src: string;
+  ridge_plot: string;
+  mse_plot: string;
 }
 
-export interface RidgePlotRequest {
+export interface RidgeRequest {
   kernel: string;
   kernelParamName: string | null;
   kernelParamValue: number | null;
   lambda: number;
+  runs: number;
 }
 
 export interface KernelConfig {

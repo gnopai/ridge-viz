@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify, request, abort, make_response
 import numpy as np
 from api.kernels import createKernel, getKernelConfigs
-from api.data import make_fake_data
+from api.data import default_gaussian_process
 from api.util import build_img_src_from_plot
-import api.ridge as ridge
+from api.stats import mse_plotter
+from api.ridge import ridge_regression as do_ridge_reg, plot_ridge_regression
 
 api_blueprint = Blueprint("api", __name__)
 
@@ -21,18 +22,24 @@ def kernelConfigs():
 
 @api_blueprint.route('/ridge', methods=['POST'])
 def ridge_regression():
-    dataset = make_fake_data()
-    n = len(dataset[0])
-
     body = request.get_json()
+
+    run_count = body.get('runs', 5)
+    data_process = default_gaussian_process
+    dataset = data_process.sample(np.arange(255), run_count)
+    n = dataset.length()
+
     kernel = _getKernelForRequest(body)
     lamb = body.get('lambda')
 
     ridge_x = np.linspace(0, n, 1000)
-    ridge_y = ridge.ridge_regression(kernel, lamb, dataset, ridge_x)
-    plot_ridge = lambda plt: plt.plot(dataset[0], dataset[1], 'b.', ridge_x, ridge_y, '-r')
-    image_src = build_img_src_from_plot(plot_ridge)
-    return jsonify({'message': 'OK', 'img_src': image_src})
+    all_ridge_y = np.array([do_ridge_reg(kernel, lamb, (dataset.x, y), ridge_x) for y in dataset.y_samples])
+    all_ridge_y = all_ridge_y.reshape(run_count, len(ridge_x))
+
+    ridge_plot_img = build_img_src_from_plot(plot_ridge_regression(dataset, ridge_x, all_ridge_y[0]))
+    mse_plot_img = build_img_src_from_plot(mse_plotter(data_process, ridge_x, all_ridge_y))
+
+    return jsonify({'message': 'OK', 'ridge_plot': ridge_plot_img, 'mse_plot': mse_plot_img})
 
 
 def _getKernelForRequest(body):
