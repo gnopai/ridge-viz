@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { requestRidgePlots } from './api/ridge-plot';
 import { getKernelConfigs } from './api/get-kernel-configs';
-import type { KernelConfig, RidgeResponse } from './types';
+import { buildRidgeRequest } from './api/build-ridge-request';
+import type { KernelConfig, ParamRange, RidgeResponse } from './types';
 import { KernelSelector } from './components/KernelSelector';
 import { NumericInput } from './components/NumericInput';
 import { Plot } from './components/Plot';
@@ -33,14 +34,12 @@ function App() {
   const onSubmit = () => {
     if (!kernel) return;
 
-    requestRidgePlots({
-      kernels: [{
-        ...kernel,
-        paramValue: kernelParam,
-      }],
-      lambdas: [lambda],
-      runs,
-    }).then((response) => {
+    // TODO actually get ranges from UI
+    const kernelParamRange: ParamRange | null = kernelParam ? { start: kernelParam, end: kernelParam, count: 1, type: 'linear' } : null;
+    const lambdaParamRange: ParamRange = { start: lambda, end: lambda, count: 1, type: 'linear' };
+    const request = buildRidgeRequest(kernel, kernelParamRange, lambdaParamRange, runs);
+
+    requestRidgePlots(request).then((response) => {
       setRidgeResponse(response);
     });
   };

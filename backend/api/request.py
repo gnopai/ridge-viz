@@ -3,15 +3,34 @@ from werkzeug.exceptions import BadRequest
 import numpy as np
 from api.kernels import createKernel, getKernelConfigs
 
+# TODO rename this file to run_config.py (it's only used by routes.py)
+
 
 class RunConfig:
-    def __init__(self, lamb, runs, kernel, request_kernel):
+    def __init__(self, lamb, runs, kernel, kernel_name, kernel_param, kernel_param_value):
         self.lamb = lamb
         self.kernel = kernel
         self.runs = runs
-        self.kernel_name = request_kernel.get('name')
-        self.kernel_param = request_kernel.get('paramName')
-        self.kernel_param_value = request_kernel.get('paramValue')
+        self.kernel_name = kernel_name
+        self.kernel_param = kernel_param
+        self.kernel_param_value = kernel_param_value
+
+
+    @staticmethod
+    def from_dict(obj):
+        lamb = obj.get('lambda')
+        runs = obj.get('runs')
+        kernel_name = obj.get('kernelName')
+        kernel_param = obj.get('kernelParamName')
+        kernel_param_value = obj.get('kernelParamValue')
+
+        kernel_params = {}
+        if kernel_param and kernel_param_value is not None:
+            kernel_params = { kernel_param: kernel_param_value }
+
+        kernel = createKernel(kernel_name, **kernel_params)
+
+        return RunConfig(lamb, runs, kernel, kernel_name, kernel_param, kernel_param_value)
 
 
     def as_dict(self):
@@ -21,22 +40,6 @@ class RunConfig:
 
 def get_run_configs(body):
     try:
-        runs = body.get('runs', 5)
-        lambdas = body.get('lambdas')
-        request_kernels = body.get('kernels', [])
-        kernels = [(_parse_kernel(kernel), kernel) for kernel in request_kernels]
-        return [RunConfig(lamb, runs, kernel[0], kernel[1]) for lamb in lambdas for kernel in kernels]
+        return [RunConfig.from_dict(config) for config in body.get('configs')]
     except:
         raise BadRequest('Invalid kernel and/or parameters specified')
-
-
-def _parse_kernel(kernel):
-    name = kernel.get('name')
-    param = kernel.get('paramName')
-    param_value = kernel.get('paramValue')
-
-    kernel_params = {}
-    if param and param_value is not None:
-        kernel_params = { param: param_value }
-
-    return createKernel(name, **kernel_params)
