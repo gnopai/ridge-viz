@@ -3,27 +3,35 @@ export interface RidgeResponse {
   message: string;
 }
 
-export interface RidgeResult {
-  lambdas: number;
+export interface RidgeConfig {
+  lambda: number;
   runs: number;
   kernelName: string;
   kernelParamName: string | null;
   kernelParamValue: number | null;
+}
+
+export interface RidgeResult extends RidgeConfig {
   overallMSE: number;
   ridgePlot: string;
   msePlot: string;
 }
 
 export interface RidgeRequest {
-  kernels: KernelConfig[];
-  lambdas: number[];
-  runs: number;
+  configs: RidgeConfig[]
 }
 
 export interface KernelConfig {
   name: string;
   paramName: string | null;
   paramValue: number | null;
+}
+
+export interface ParamRange {
+  type: 'linear' | 'log';
+  start: number;
+  end: number;
+  count: number;
 }
 
 export interface KernelConfigResponse {
