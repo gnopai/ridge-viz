@@ -3,10 +3,8 @@ from werkzeug.exceptions import BadRequest
 import numpy as np
 from api.kernels import createKernel, getKernelConfigs
 
-# TODO rename this file to run_config.py (it's only used by routes.py)
 
-
-class RunConfig:
+class RidgeConfig:
     def __init__(self, lamb, runs, kernel, kernel_name, kernel_param, kernel_param_value):
         self.lamb = lamb
         self.kernel = kernel
@@ -30,7 +28,7 @@ class RunConfig:
 
         kernel = createKernel(kernel_name, **kernel_params)
 
-        return RunConfig(lamb, runs, kernel, kernel_name, kernel_param, kernel_param_value)
+        return RidgeConfig(lamb, runs, kernel, kernel_name, kernel_param, kernel_param_value)
 
 
     def as_dict(self):
@@ -38,8 +36,8 @@ class RunConfig:
                 'kernelParamName': self.kernel_param, 'kernelParamValue': self.kernel_param_value}
 
 
-def get_run_configs(body):
+def get_ridge_configs(body):
     try:
-        return [RunConfig.from_dict(config) for config in body.get('configs')]
+        return [RidgeConfig.from_dict(config) for config in body.get('configs')]
     except:
         raise BadRequest('Invalid kernel and/or parameters specified')
