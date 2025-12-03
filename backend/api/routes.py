@@ -6,7 +6,7 @@ from api.data import default_gaussian_process
 from api.util import build_img_src_from_plot
 from api.stats import mse_plotter, overall_mse
 from api.ridge import ridge_plotter, RidgeModel
-from api.request import get_run_configs
+from api.ridge_config import get_ridge_configs
 
 api_blueprint = Blueprint("api", __name__)
 
@@ -25,14 +25,14 @@ def kernelConfigs():
 @api_blueprint.route('/ridge', methods=['POST'])
 def ridge_regression():
     body = request.get_json()
-    run_configs = get_run_configs(body)
+    ridge_configs = get_ridge_configs(body)
 
     data_process = default_gaussian_process
-    dataset = data_process.sample(np.arange(255), run_configs[0].runs)
+    dataset = data_process.sample(np.arange(255), ridge_configs[0].runs)
     n = dataset.length()
 
     ridge_x = np.linspace(0, n, 1000)
-    ridge_results = [_run_single_config(config, dataset, data_process, ridge_x) for config in run_configs]
+    ridge_results = [_run_single_config(config, dataset, data_process, ridge_x) for config in ridge_configs]
 
     return jsonify({'message': 'OK', 'results': ridge_results})
 
