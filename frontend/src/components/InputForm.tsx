@@ -36,7 +36,7 @@ export const InputForm: FC<InputFormProps> = ({ kernelConfigs, onSubmit }) => {
   }, [kernelConfigs]);
 
   return (
-    <div className="flex flex-row items-center justify-center">
+    <div className="flex flex-row items-center justify-center border-1 rounded-sm border-gray-300 p-4">
       <div className="grid grid-cols-3 gap-4 justify-center">
         <KernelSelector kernelConfigs={kernelConfigs} onSelectKernel={switchKernel} />
         <ParamRangeSelector label={kernel?.paramName} paramRange={kernelParamRange} onChange={setKernelParamRange} />
