@@ -21,6 +21,13 @@ export interface RidgeRequest {
   configs: RidgeConfig[]
 }
 
+export interface RidgeForm {
+  kernel: KernelConfig;
+  kernelParamRange: ParamRange | null;
+  lambdaParamRange: ParamRange;
+  runs: number;
+}
+
 export interface KernelConfig {
   name: string;
   paramName: string | null;
