@@ -1,11 +1,6 @@
-import type { KernelConfig, ParamRange, RidgeRequest } from '../types';
+import type { ParamRange, RidgeForm, RidgeRequest } from '../types';
 
-export const buildRidgeRequest = (
-  kernel: KernelConfig,
-  kernelParamRange: ParamRange | null,
-  lambdaParamRange: ParamRange,
-  runs: number
-): RidgeRequest => {
+export const buildRidgeRequest = ({ kernel, kernelParamRange, lambdaParamRange, runs }: RidgeForm): RidgeRequest => {
   const kernelParams = kernelParamRange ? expandParamRange(kernelParamRange) : [null];
   const lambdas = expandParamRange(lambdaParamRange);
   const staticFields = { kernelName: kernel.name, kernelParamName: kernel.paramName, runs };
