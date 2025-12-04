@@ -27,8 +27,10 @@ export interface KernelConfig {
   paramValue: number | null;
 }
 
+export type ParamRangeType = 'linear' | 'log';
+
 export interface ParamRange {
-  type: 'linear' | 'log';
+  type: ParamRangeType;
   start: number;
   end: number;
   count: number;
