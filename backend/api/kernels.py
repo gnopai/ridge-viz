@@ -42,7 +42,7 @@ class AffineKernel(PowerKernelBase):
         super().__init__(1)
 
 
-class QuadKernel(PowerKernelBase):
+class QuadraticKernel(PowerKernelBase):
     def __init__(self):
         super().__init__(2)
 

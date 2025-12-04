@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
+import { sortBy } from 'lodash';
 import { requestRidgePlots } from './api/ridge-plot';
 import { getKernelConfigs } from './api/get-kernel-configs';
 import { buildRidgeRequest } from './api/build-ridge-request';
-import type { KernelConfig, ParamRange, RidgeResponse } from './types';
+import type { RidgeResult, KernelConfig, ParamRange, RidgeResponse } from './types';
 import { KernelSelector } from './components/KernelSelector';
 import { NumericInput } from './components/NumericInput';
 import { Plot } from './components/Plot';
 import { ParamRangeSelector } from './components/ParamRangeSelector';
+import { PlotSelector } from './components/PlotSelector';
 
 const defaultRange = (value: number | null): ParamRange | null => {
   if (value === null) return null;
@@ -17,6 +19,7 @@ const defaultRange = (value: number | null): ParamRange | null => {
 function App() {
   // TODO switch to useReducer(reducer, initial), with reducer that just does { ...old, ... new }
   const [ridgeResponse, setRidgeResponse] = useState<RidgeResponse | null>(null);
+  const [currentResult, setCurrentResult] = useState<RidgeResult | null>(null);
   const [kernelConfigs, setKernelConfigs] = useState<KernelConfig[]>([]);
   const [kernel, setKernel] = useState<KernelConfig | null>(null);
   const [kernelParamRange, setKernelParamRange] = useState<ParamRange | null>(null);
@@ -44,18 +47,21 @@ function App() {
     const request = buildRidgeRequest(kernel, kernelParamRange, lambdaRange, runs);
 
     requestRidgePlots(request).then((response) => {
-      setRidgeResponse(response);
+      const sortedResponse = { ...response, results: sortBy(response.results, 'overallMSE') };
+      setRidgeResponse(sortedResponse);
+      setCurrentResult(sortedResponse.results[0]);
     });
   };
 
   return (
     <div className="flex flex-col items-center p-8">
       <h1 className="text-3xl font-bold">Ridge Viz</h1>
-      <div className="flex flex-col border-1 border-gray-300 mx-20 my-10 p-4">
+      <div className="flex flex-col items-center border-1 border-gray-300 mx-20 my-10 p-4">
         <div className="flex flex-row">
-          <Plot title="Ridge Regression" imgSrc={ridgeResponse?.results[0]?.ridgePlot} />
-          <Plot title="MSE Breakdown" imgSrc={ridgeResponse?.results[0]?.msePlot} />
+          <Plot title="Ridge Regression" imgSrc={currentResult?.ridgePlot} />
+          <Plot title="MSE Breakdown" imgSrc={currentResult?.msePlot} />
         </div>
+        <PlotSelector results={ridgeResponse?.results} onSelect={setCurrentResult} />
         <div className="flex flex-row items-center justify-center">
           <div className="grid grid-cols-3 gap-4 justify-center">
             <KernelSelector kernelConfigs={kernelConfigs} onSelectKernel={switchKernel} />

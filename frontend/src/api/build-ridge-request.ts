@@ -1,8 +1,11 @@
 import type { KernelConfig, ParamRange, RidgeRequest } from '../types';
 
-const DECIMALS = 12;
-
-export const buildRidgeRequest = (kernel: KernelConfig, kernelParamRange: ParamRange | null, lambdaParamRange: ParamRange, runs: number): RidgeRequest => {
+export const buildRidgeRequest = (
+  kernel: KernelConfig,
+  kernelParamRange: ParamRange | null,
+  lambdaParamRange: ParamRange,
+  runs: number
+): RidgeRequest => {
   const kernelParams = kernelParamRange ? expandParamRange(kernelParamRange) : [null];
   const lambdas = expandParamRange(lambdaParamRange);
   const staticFields = { kernelName: kernel.name, kernelParamName: kernel.paramName, runs };
@@ -29,12 +32,10 @@ const buildLinearList = ({ start, end, count }: ParamRange): number[] => {
   for (let i = 0; i < count; i++) {
     list.push(start + i * step);
   }
-  return list.map(i => Number(i.toFixed(DECIMALS)));
+  return list;
 };
 
 const buildLogList = (paramRange: ParamRange): number[] => {
   const exponents = buildLinearList(paramRange);
-  return exponents
-    .map(exp => 10**exp)
-    .map(i => Number(i.toFixed(DECIMALS)));
+  return exponents.map((exp) => 10 ** exp);
 };
