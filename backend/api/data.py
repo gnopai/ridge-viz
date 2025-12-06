@@ -20,7 +20,7 @@ class SimpleGaussianProcess:
 
     def sample(self, xs, count):
         means = self.means(xs)
-        variances = [self.var_func(x) for x in xs]
+        variances = self.variances(xs)
         cov = np.diag(variances)
         y_samples = np.random.multivariate_normal(mean=means, cov=cov, size=count)
         actual_y = [self.mean_func(x) for x in xs]
@@ -29,6 +29,11 @@ class SimpleGaussianProcess:
 
     def means(self, xs):
         return np.array([self.mean_func(x) for x in xs])
+
+
+    def variances(self, xs):
+        return np.array([self.var_func(x) for x in xs])
+
 
 
 # TODO consider getting mean/var arrays from request instead

@@ -9,11 +9,11 @@ this_module = sys.modules[__name__]
 # 2) only use a single (optional) constructor param with a default value set
 
 class GaussianKernel:
-    def __init__(self, variance = 1.0):
-        self.variance = variance
+    def __init__(self, sigma = 1.0):
+        self.sigma = sigma
 
     def compute(self, x, y):
-        return np.exp((-(x - y.T)**2) / (2 * self.variance))
+        return np.exp((-(x - y.T)**2) / (2 * self.sigma**2))
 
 
 class SincKernel:

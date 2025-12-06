@@ -24,10 +24,59 @@ class RidgeModel:
         return np.dot(self.kernel.compute(x_as_array, self.train_x), self.alphas)
 
 
+class RidgePlotter:
+    def __init__(self, dataset, data_process, ridge_x, ridge_y):
+        self.sample_data = dataset
+        self.x = ridge_x
+        self.ridge_y = ridge_y[0]
 
-def ridge_plotter(dataset, ridge_x, ridge_y):
-    def make_plot(plt):
-        plt.plot(dataset.x, dataset.y_samples[0], 'b.', ridge_x, ridge_y, '-r')
+        self.real_y = data_process.means(ridge_x)
+        self.real_sd = np.sqrt(data_process.variances(ridge_x))
 
-    return make_plot
+        self.ridge_means = np.array([np.mean(y) for y in ridge_y.T])
+        self.ridge_sd = np.sqrt(np.array([np.var(y, ddof=1) for y in ridge_y.T]))
 
+    def make_full_plot(self, plt):
+        self._plot_samples(plt)
+        self._plot_model_run(plt)
+        self._plot_process(plt)
+        self._plot_model(plt)
+        plt.legend()
+
+
+    def make_process_plot(self, plt):
+        self._plot_samples(plt)
+        self._plot_process(plt)
+        plt.legend()
+
+
+    def make_model_plot(self, plt):
+        self._plot_samples(plt)
+        self._plot_model(plt)
+        plt.legend()
+
+
+    def make_samples_plot(self, plt):
+        self._plot_samples(plt)
+        self._plot_model_run(plt)
+        plt.legend()
+
+
+    def _plot_samples(self, plt):
+        plt.plot(self.sample_data.x, self.sample_data.y_samples[0], 'b.', label='Sample data')
+
+
+    def _plot_model_run(self, plt):
+        plt.plot(self.x, self.ridge_y, 'r-', label='Single model run')
+
+
+    def _plot_process(self, plt):
+        plt.plot(self.x, self.real_y, 'g-', label='Real function')
+        plt.plot(self.x, self.real_y - self.real_sd, 'c--', label='Real ± 1 SD')
+        plt.plot(self.x, self.real_y + self.real_sd, 'c--')
+
+
+    def _plot_model(self, plt):
+        plt.plot(self.x, self.ridge_means, 'm-', label='Model avg')
+        plt.plot(self.x, self.ridge_means - self.ridge_sd, 'y--', label='Model avg ± 1 SD')
+        plt.plot(self.x, self.ridge_means + self.ridge_sd, 'y--')

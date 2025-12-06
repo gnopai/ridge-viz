@@ -12,13 +12,14 @@ const defaultRange = (value: number | null): ParamRange | null => {
 export interface InputFormProps {
   kernelConfigs: KernelConfig[];
   onSubmit: (form: RidgeForm) => void;
+  className?: string;
 }
 
-export const InputForm: FC<InputFormProps> = ({ kernelConfigs, onSubmit }) => {
+export const InputForm: FC<InputFormProps> = ({ kernelConfigs, onSubmit, className }) => {
   const [kernel, setKernel] = useState<KernelConfig | null>(null);
   const [kernelParamRange, setKernelParamRange] = useState<ParamRange | null>(null);
   const [lambdaParamRange, setlambdaParamRange] = useState<ParamRange>(defaultRange(1) as ParamRange);
-  const [runs, setRuns] = useState<number>(5);
+  const [runs, setRuns] = useState<number>(10);
 
   const switchKernel = (kernel: KernelConfig | null) => {
     setKernel(kernel);
@@ -36,8 +37,8 @@ export const InputForm: FC<InputFormProps> = ({ kernelConfigs, onSubmit }) => {
   }, [kernelConfigs]);
 
   return (
-    <div className="flex flex-row items-center justify-center border-1 rounded-sm border-gray-300 p-4">
-      <div className="grid grid-cols-3 gap-4 justify-center">
+    <div className={`flex flex-row items-center justify-center border-1 rounded-sm border-gray-300 p-4 ${className || ''}`}>
+      <div className="grid grid-cols-3 gap-4 justify-center items-center">
         <KernelSelector kernelConfigs={kernelConfigs} onSelectKernel={switchKernel} />
         <ParamRangeSelector label={kernel?.paramName} paramRange={kernelParamRange} onChange={setKernelParamRange} />
         <button
@@ -46,7 +47,7 @@ export const InputForm: FC<InputFormProps> = ({ kernelConfigs, onSubmit }) => {
         >
           Submit
         </button>
-        <NumericInput label="runs per model" value={runs} onChange={setRuns} />
+        <NumericInput label="simulations per model" value={runs} onChange={setRuns} />
         <ParamRangeSelector label="lambda" paramRange={lambdaParamRange} onChange={setlambdaParamRange} />
       </div>
     </div>

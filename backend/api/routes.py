@@ -5,7 +5,7 @@ from api.kernels import createKernel, getKernelConfigs
 from api.data import default_gaussian_process
 from api.util import build_img_src_from_plot
 from api.stats import mse_plotter, overall_mse
-from api.ridge import ridge_plotter, RidgeModel
+from api.ridge import RidgePlotter, RidgeModel
 from api.ridge_config import get_ridge_configs
 
 api_blueprint = Blueprint("api", __name__)
@@ -41,12 +41,19 @@ def _run_single_config(config, dataset, data_process, ridge_x):
     ridge_models = [RidgeModel(config.kernel, config.lamb, dataset.x, y) for y in dataset.y_samples]
     all_ridge_y = np.array([model.predict(ridge_x) for model in ridge_models])
     all_ridge_y = all_ridge_y.reshape(config.runs, len(ridge_x))
-
-    ridge_plot_img = build_img_src_from_plot(ridge_plotter(dataset, ridge_x, all_ridge_y[0]))
+    
+    ridge_plotter = RidgePlotter(dataset, data_process, ridge_x, all_ridge_y)
+    full_ridge_plot = build_img_src_from_plot(ridge_plotter.make_full_plot)
+    process_ridge_plot = build_img_src_from_plot(ridge_plotter.make_process_plot)
+    model_ridge_plot = build_img_src_from_plot(ridge_plotter.make_model_plot)
+    samples_ridge_plot = build_img_src_from_plot(ridge_plotter.make_samples_plot)
     mse_plot_img = build_img_src_from_plot(mse_plotter(data_process, ridge_x, all_ridge_y))
 
     response = config.as_dict()
-    response['ridgePlot'] = ridge_plot_img
+    response['ridgeFullPlot'] = full_ridge_plot
+    response['ridgeProcessPlot'] = process_ridge_plot
+    response['ridgeModelPlot'] = model_ridge_plot
+    response['ridgeSamplesPlot'] = samples_ridge_plot
     response['msePlot'] = mse_plot_img
     response['overallMSE'] = overall_mse(data_process, ridge_x, all_ridge_y[0])
     return response

@@ -7,6 +7,7 @@ import type { RidgeResult, KernelConfig, RidgeResponse, RidgeForm } from './type
 import { Plot } from './components/Plot';
 import { PlotSelector } from './components/PlotSelector';
 import { InputForm } from './components/InputForm';
+import { MultiPlot } from './components/MultiPlot';
 
 function App() {
   const [ridgeResponse, setRidgeResponse] = useState<RidgeResponse | null>(null);
@@ -31,16 +32,18 @@ function App() {
     });
   };
 
+  const mseSubtitle = currentResult?.runs ? `(${currentResult?.runs} runs)` : '';
+
   return (
     <div className="flex flex-col items-center p-8">
       <h1 className="text-3xl font-bold">Ridge Viz</h1>
       <div className="flex flex-col items-center border-1 border-gray-300 mx-20 my-10 p-4">
         <div className="flex flex-row">
-          <Plot title="Ridge Regression" imgSrc={currentResult?.ridgePlot} />
-          <Plot title="MSE Breakdown" imgSrc={currentResult?.msePlot} />
+          <MultiPlot title="Sample Ridge Regression" ridgeResult={currentResult} />
+          <Plot title={`Model MSE Breakdown ${mseSubtitle}`} imgSrc={currentResult?.msePlot} />
         </div>
         <PlotSelector results={ridgeResponse?.results} onSelect={setCurrentResult} />
-        <InputForm kernelConfigs={kernelConfigs} onSubmit={onSubmit} />
+        <InputForm kernelConfigs={kernelConfigs} onSubmit={onSubmit} className="mt-2"/>
       </div>
     </div>
   );

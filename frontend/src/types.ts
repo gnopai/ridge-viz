@@ -13,7 +13,10 @@ export interface RidgeConfig {
 
 export interface RidgeResult extends RidgeConfig {
   overallMSE: number;
-  ridgePlot: string;
+  ridgeFullPlot: string;
+  ridgeProcessPlot: string;
+  ridgeModelPlot: string;
+  ridgeSamplesPlot: string;
   msePlot: string;
 }
 

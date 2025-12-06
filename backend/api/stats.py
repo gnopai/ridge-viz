@@ -14,6 +14,9 @@ def mse_plotter(data_process, ridge_x, ridge_y):
     mses = squared_biases + variances
 
     def make_mse_plot(plt):
-        plt.plot(ridge_x, mses, '-r', ridge_x, variances, '-g', ridge_x, squared_biases, '-b')
+        plt.plot(ridge_x, mses, '-r', label='MSE')
+        plt.plot(ridge_x, variances, '-g', label='Variance')
+        plt.plot(ridge_x, squared_biases, '-b', label='Bias^2')
+        plt.legend()
 
     return make_mse_plot
